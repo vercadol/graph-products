@@ -1,7 +1,6 @@
 module Main where
 
-import Lib
-import Data.Graph as Graph
+import GraphProducts
 
 main :: IO ()
 main = someFunc
