@@ -22,20 +22,6 @@ cartesianEdges graph1 graph2 =
         expandEdgesToVertices ((v1, v2):edges) vertices = (List.map (\vertice -> ((v1, vertice),(v2, vertice))) vertices) ++ expandEdgesToVertices edges vertices
         switchTupleElements = List.map (\((a, b), (c, d)) -> ((b, a), (d, c)))
 
-cartesianGraphProduct :: Graph -> Graph -> Graph
-cartesianGraphProduct graph1 graph2 =
-    case mappedEdges of
-        Just edges -> Graph.buildG (0, nrVertices - 1) edges
-        _ -> error "Error occured in cartesianGraphProduct"
-    where
-        vertices = Set.toList (cartesianVertices graph1 graph2)
-        edges = Set.toList (cartesianEdges graph1 graph2)
-        nrVertices = List.length vertices
-        mapEdge (v1, v2) = case (List.elemIndex v1 vertices, List.elemIndex v2 vertices) of
-                            (Just mappedV1, Just mappedV2) -> Just (mappedV1, mappedV2)
-                            _ -> Nothing
-        mappedEdges = mapM mapEdge edges
-
 tensorEdges :: Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))
 tensorEdges graph1 graph2 =
     Set.fromList (expandEdgesToEdges (edges graph1) (edges graph2))
@@ -44,17 +30,23 @@ tensorEdges graph1 graph2 =
         expandEdgesToEdges _ [] = []
         expandEdgesToEdges ((v1, v2):edges1) edges2 = (List.map (\(v3, v4) -> ((v1,v3),(v2,v4))) edges2) ++ expandEdgesToEdges edges1 edges2
 
-tensorGraphProduct :: Graph -> Graph -> Graph
-tensorGraphProduct graph1 graph2 =
+generalGraphProduct :: (Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))) -> Graph -> Graph -> Graph
+generalGraphProduct edgesFunction graph1 graph2 =
     case mappedEdges of
         Just edges -> Graph.buildG (0, nrVertices - 1) edges
         _ -> error "Error occured in cartesianGraphProduct"
     where
         vertices = Set.toList (cartesianVertices graph1 graph2)
-        edges = Set.toList (tensorEdges graph1 graph2)
+        edges = Set.toList (edgesFunction graph1 graph2)
         nrVertices = List.length vertices
         mapEdge (v1, v2) = case (List.elemIndex v1 vertices, List.elemIndex v2 vertices) of
                             (Just mappedV1, Just mappedV2) -> Just (mappedV1, mappedV2)
                             _ -> Nothing
         mappedEdges = mapM mapEdge edges
+
+cartesianGraphProduct :: Graph -> Graph -> Graph
+cartesianGraphProduct = generalGraphProduct cartesianEdges
+
+tensorGraphProduct :: Graph -> Graph -> Graph
+tensorGraphProduct = generalGraphProduct tensorEdges
 
