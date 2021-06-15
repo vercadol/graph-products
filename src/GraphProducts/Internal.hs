@@ -12,11 +12,15 @@ import Data.Graph as Graph
 import Data.List as List
 import Data.Set as Set
 
-cartesianVertices :: Graph -> Graph -> Set (Graph.Vertex, Graph.Vertex)
+type TupleVertex = (Graph.Vertex, Graph.Vertex)
+type TupleEdge = (TupleVertex, TupleVertex)
+
+
+cartesianVertices :: Graph -> Graph -> Set TupleVertex
 cartesianVertices graph1 graph2 =
     Set.cartesianProduct (Set.fromList (vertices graph1)) (Set.fromList (vertices graph2))
 
-cartesianEdges :: Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))
+cartesianEdges :: Graph -> Graph -> Set TupleEdge
 cartesianEdges graph1 graph2 =
     Set.fromList ((expandEdgesToVertices (edges graph1) (vertices graph2)) ++ switchTupleElements (expandEdgesToVertices (edges graph2) (vertices graph1)))
     where
@@ -24,7 +28,7 @@ cartesianEdges graph1 graph2 =
         expandEdgesToVertices ((v1, v2):edges) vertices = (List.map (\vertice -> ((v1, vertice),(v2, vertice))) vertices) ++ expandEdgesToVertices edges vertices
         switchTupleElements = List.map (\((a, b), (c, d)) -> ((b, a), (d, c)))
 
-tensorEdges :: Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))
+tensorEdges :: Graph -> Graph -> Set TupleEdge
 tensorEdges graph1 graph2 =
     Set.fromList (expandEdgesToEdges (edges graph1) (edges graph2))
     where
@@ -32,7 +36,7 @@ tensorEdges graph1 graph2 =
         expandEdgesToEdges _ [] = []
         expandEdgesToEdges ((v1, v2):edges1) edges2 = (List.map (\(v3, v4) -> ((v1,v3),(v2,v4))) edges2) ++ expandEdgesToEdges edges1 edges2
 
-lexicographicalEdges :: Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))
+lexicographicalEdges :: Graph -> Graph -> Set TupleEdge
 lexicographicalEdges graph1 graph2 =
     Set.fromList (firstCondition ++ secondCondition)
     where
@@ -49,7 +53,7 @@ lexicographicalEdges graph1 graph2 =
 
 
 
-generalGraphProduct :: (Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))) -> Graph -> Graph -> Graph
+generalGraphProduct :: (Graph -> Graph -> Set TupleEdge) -> Graph -> Graph -> Graph
 generalGraphProduct edgesFunction graph1 graph2 =
     case mappedEdges of
         Just edges -> Graph.buildG (0, nrVertices - 1) edges
