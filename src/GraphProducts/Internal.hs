@@ -20,38 +20,38 @@ cartesianVertices :: Graph -> Graph -> Set TupleVertex
 cartesianVertices graph1 graph2 =
     Set.cartesianProduct (Set.fromList (vertices graph1)) (Set.fromList (vertices graph2))
 
+allPossibleEdges :: Set TupleVertex -> Set TupleEdge
+allPossibleEdges vertices =
+    Set.filter (\(a, b) -> a /= b) all
+    where all = Set.cartesianProduct vertices vertices
+
+hasEdge :: Graph -> (Graph.Vertex, Graph.Vertex) -> Bool
+hasEdge graph edge =
+    edge `List.elem` (edges graph)
+
+getEdgesConditional :: ((Graph.Vertex, Graph.Vertex) -> Bool) -> ((Graph.Vertex, Graph.Vertex) -> Bool) -> Graph -> Graph -> Set TupleEdge
+getEdgesConditional condOnGraph1 condOnGraph2 graph1 graph2 =
+    Set.filter (\((a1, _), (b1, _)) -> condOnGraph1 (a1, b1))
+        . Set.filter (\((_, a2), (_, b2)) -> condOnGraph2 (a2, b2))
+        $ allPossibleEdges (cartesianVertices graph1 graph2)
+
 cartesianEdges :: Graph -> Graph -> Set TupleEdge
 cartesianEdges graph1 graph2 =
-    Set.fromList ((expandEdgesToVertices (edges graph1) (vertices graph2)) ++ switchTupleElements (expandEdgesToVertices (edges graph2) (vertices graph1)))
+    Set.union firstCondition secondCondition
     where
-        expandEdgesToVertices [] vertices = []
-        expandEdgesToVertices ((v1, v2):edges) vertices = (List.map (\vertice -> ((v1, vertice),(v2, vertice))) vertices) ++ expandEdgesToVertices edges vertices
-        switchTupleElements = List.map (\((a, b), (c, d)) -> ((b, a), (d, c)))
+        firstCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
+        secondCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> a2 == b2) graph1 graph2
 
 tensorEdges :: Graph -> Graph -> Set TupleEdge
 tensorEdges graph1 graph2 =
-    Set.fromList (expandEdgesToEdges (edges graph1) (edges graph2))
-    where
-        expandEdgesToEdges [] _ = []
-        expandEdgesToEdges _ [] = []
-        expandEdgesToEdges ((v1, v2):edges1) edges2 = (List.map (\(v3, v4) -> ((v1,v3),(v2,v4))) edges2) ++ expandEdgesToEdges edges1 edges2
+    getEdgesConditional (hasEdge graph1) (hasEdge graph2) graph1 graph2
 
 lexicographicalEdges :: Graph -> Graph -> Set TupleEdge
 lexicographicalEdges graph1 graph2 =
-    Set.fromList (firstCondition ++ secondCondition)
+    Set.union firstCondition secondCondition
     where
-        firstCondition = switchTupleElements (expandEdgesToVertices (edges graph2) (vertices graph1))
-        secondCondition = expandEdgesToEdges (edges graph1) (allTuples (vertices graph2))
-        expandEdgesToVertices [] vertices = []
-        expandEdgesToVertices ((v1, v2):edges) vertices = (List.map (\vertice -> ((v1, vertice),(v2, vertice))) vertices) ++ expandEdgesToVertices edges vertices
-        switchTupleElements = List.map (\((a, b), (c, d)) -> ((b, a), (d, c)))
-
-        expandEdgesToEdges [] _ = []
-        expandEdgesToEdges _ [] = []
-        expandEdgesToEdges ((v1, v2):edges1) edges2 = (List.map (\(v3, v4) -> ((v1,v3),(v2,v4))) edges2) ++ expandEdgesToEdges edges1 edges2
-        allTuples lst = Set.toList (Set.cartesianProduct (Set.fromList lst) (Set.fromList lst))
-
-
+        firstCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> True) graph1 graph2
+        secondCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
 
 generalGraphProduct :: (Graph -> Graph -> Set TupleEdge) -> Graph -> Graph -> Graph
 generalGraphProduct edgesFunction graph1 graph2 =
