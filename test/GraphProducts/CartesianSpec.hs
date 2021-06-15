@@ -3,6 +3,7 @@ module GraphProducts.CartesianSpec (spec) where
 import Test.Hspec
 import Test.QuickCheck
 
+import GraphProducts
 import GraphProducts.Internal
 import Data.Graph as Graph
 import Data.Set as Set
