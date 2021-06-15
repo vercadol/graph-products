@@ -4,6 +4,8 @@ module GraphProducts.Internal
     , cartesianGraphProduct
     , tensorEdges
     , tensorGraphProduct
+    , lexicographicalEdges
+    , lexicographicalGraphProduct
     ) where
 
 import Data.Graph as Graph
@@ -30,11 +32,28 @@ tensorEdges graph1 graph2 =
         expandEdgesToEdges _ [] = []
         expandEdgesToEdges ((v1, v2):edges1) edges2 = (List.map (\(v3, v4) -> ((v1,v3),(v2,v4))) edges2) ++ expandEdgesToEdges edges1 edges2
 
+lexicographicalEdges :: Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))
+lexicographicalEdges graph1 graph2 =
+    Set.fromList (firstCondition ++ secondCondition)
+    where
+        firstCondition = switchTupleElements (expandEdgesToVertices (edges graph2) (vertices graph1))
+        secondCondition = expandEdgesToEdges (edges graph1) (allTuples (vertices graph2))
+        expandEdgesToVertices [] vertices = []
+        expandEdgesToVertices ((v1, v2):edges) vertices = (List.map (\vertice -> ((v1, vertice),(v2, vertice))) vertices) ++ expandEdgesToVertices edges vertices
+        switchTupleElements = List.map (\((a, b), (c, d)) -> ((b, a), (d, c)))
+
+        expandEdgesToEdges [] _ = []
+        expandEdgesToEdges _ [] = []
+        expandEdgesToEdges ((v1, v2):edges1) edges2 = (List.map (\(v3, v4) -> ((v1,v3),(v2,v4))) edges2) ++ expandEdgesToEdges edges1 edges2
+        allTuples lst = Set.toList (Set.cartesianProduct (Set.fromList lst) (Set.fromList lst))
+
+
+
 generalGraphProduct :: (Graph -> Graph -> Set ((Graph.Vertex, Graph.Vertex), (Graph.Vertex, Graph.Vertex))) -> Graph -> Graph -> Graph
 generalGraphProduct edgesFunction graph1 graph2 =
     case mappedEdges of
         Just edges -> Graph.buildG (0, nrVertices - 1) edges
-        _ -> error "Error occured in cartesianGraphProduct"
+        _ -> error "Error occured in creating GraphProduct"
     where
         vertices = Set.toList (cartesianVertices graph1 graph2)
         edges = Set.toList (edgesFunction graph1 graph2)
@@ -49,4 +68,7 @@ cartesianGraphProduct = generalGraphProduct cartesianEdges
 
 tensorGraphProduct :: Graph -> Graph -> Graph
 tensorGraphProduct = generalGraphProduct tensorEdges
+
+lexicographicalGraphProduct :: Graph -> Graph -> Graph
+lexicographicalGraphProduct = generalGraphProduct lexicographicalEdges
 

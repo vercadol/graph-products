@@ -58,6 +58,7 @@ test-suite graph-products-test
       Paths_graph_products
     , GraphProducts.CartesianSpec
     , GraphProducts.TensorSpec
+    , GraphProducts.LexicographicalSpec
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
