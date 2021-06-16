@@ -12,17 +12,13 @@ tensor product, lexicographical product.
 -}
 
 module GraphProducts
-    ( someFunc
-    , cartesianGraphProduct
+    ( cartesianGraphProduct
     , tensorGraphProduct
     , lexicographicalGraphProduct
     ) where
 
 import GraphProducts.Internal
 import Data.Graph as Graph
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 {-|
     Function to create a cartesian product of two graphs.
