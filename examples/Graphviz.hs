@@ -31,6 +31,8 @@ main = do
   toFile "exampleGraphs/cartesian.dot" (toDotGraph (cartesianGraphProduct graph1 graph2))
   toFile "exampleGraphs/tensor.dot" (toDotGraph (tensorGraphProduct graph1 graph2))
   toFile "exampleGraphs/lexicographical.dot" (toDotGraph (lexicographicalGraphProduct graph1 graph2))
+  toFile "exampleGraphs/strong.dot" (toDotGraph (strongGraphProduct graph1 graph2))
+  toFile "exampleGraphs/conormal.dot" (toDotGraph (conormalGraphProduct graph1 graph2))
   where
     graph1 = Graph.buildG (0,1) [(0,1)]
     graph2 = Graph.buildG (0,2) [(0,1), (1,2), (2,0)]

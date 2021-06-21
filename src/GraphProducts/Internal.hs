@@ -15,6 +15,8 @@ module GraphProducts.Internal
     , cartesianEdges
     , tensorEdges
     , lexicographicalEdges
+    , strongEdges
+    , conormalEdges
     , generalGraphProduct
     ) where
 
@@ -99,6 +101,33 @@ lexicographicalEdges graph1 graph2 =
     where
         firstCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> True) graph1 graph2
         secondCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
+
+{-|
+    Function to filter the edges of a graph that was created by strong (normal, AND) product.
+    Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    Condition for (a1, b1) ~ (a2, b2): (a1 == b1 and a2 ~ b2) or (a1 ~ b1 and a2 == b2) or (a1 ~ b1 and a2 ~ b2)
+    It takes graph1 and graph2 of type 'Data.Graph' as parameters.
+-}
+strongEdges :: Graph -> Graph -> Set TupleEdge
+strongEdges graph1 graph2 =
+    Set.unions [firstCondition, secondCondition, thirdCondition]
+    where
+        firstCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
+        secondCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> a2 == b2) graph1 graph2
+        thirdCondition = getEdgesConditional (hasEdge graph1) (hasEdge graph2) graph1 graph2
+
+{-|
+    Function to filter the edges of a graph that was created by co-normal (disjunctive, OR) product.
+    Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1) or (a2 ~ b2)
+    It takes graph1 and graph2 of type 'Data.Graph' as parameters.
+-}
+conormalEdges :: Graph -> Graph -> Set TupleEdge
+conormalEdges graph1 graph2 =
+    Set.union firstCondition secondCondition
+    where
+        firstCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> True) graph1 graph2
+        secondCondition = getEdgesConditional (\(a1, b1) -> True) (hasEdge graph2) graph1 graph2
 
 {-|
     General (helper) function to create a graph product.
