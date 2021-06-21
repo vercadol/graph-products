@@ -17,6 +17,7 @@ module GraphProducts.Internal
     , lexicographicalEdges
     , strongEdges
     , conormalEdges
+    , modularEdges
     , generalGraphProduct
     ) where
 
@@ -128,6 +129,21 @@ conormalEdges graph1 graph2 =
     where
         firstCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> True) graph1 graph2
         secondCondition = getEdgesConditional (\(a1, b1) -> True) (hasEdge graph2) graph1 graph2
+
+{-|
+    Function to filter the edges of a graph that was created by modular product.
+    Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    and '!~' as "there does not exist an edge between the two vertices in the input graph"
+    Condition for (a1, b1) ~ (a2, b2): (a1 != b1 and a2 != b2) and ((a1 ~ b1 and a2 ~ b2) or (a1 !~ b1 and a2 !~ b2))
+    It takes graph1 and graph2 of type 'Data.Graph' as parameters.
+-}
+modularEdges :: Graph -> Graph -> Set TupleEdge
+modularEdges graph1 graph2 =
+    Set.intersection (Set.union firstCondition secondCondition) verticesNotEqualCondition
+    where
+        firstCondition = getEdgesConditional (hasEdge graph1) (hasEdge graph2) graph1 graph2
+        secondCondition = getEdgesConditional (not . hasEdge graph1) (not . hasEdge graph2) graph1 graph2
+        verticesNotEqualCondition = getEdgesConditional (\(a1, b1) -> a1 /= b1) (\(a2, b2) -> a2 /= b2) graph1 graph2
 
 {-|
     General (helper) function to create a graph product.
