@@ -3,7 +3,7 @@ Module      : GraphProducts.Internal
 Description : Internal module for the graph product computations, contains helper functions.
 Copyright   : (c) Veronika Dolanska, 2021
 License     : GPL-3
-Maintainer  : dolanver@fit.cvut.cz
+Maintainer  : dolanskaverca@gmail.com
 Stability   : experimental
 Portability : POSIX
 

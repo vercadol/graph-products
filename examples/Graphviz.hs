@@ -12,12 +12,20 @@ import Data.List as List
 
 import GraphProducts
 
+{-|
+    Function to translate Data.Graph to dot representation used by graphviz.
+    It takes gr of type 'Data.Graph' as parameters.
+-}
 toDotGraph :: Graph -> G.DotGraph Graph.Vertex
 toDotGraph gr =
     G.graphElemsToDot G.nonClusteredParams (verticesAndLabels (vertices gr)) (edgesAndLabels (edges gr))
     where verticesAndLabels = List.map (\x -> (x, ""))
           edgesAndLabels = List.map (\(v1, v2) -> (v1, v2, ""))
 
+{-|
+    Function to print dot representation of graph to file.
+    It takes filename of type String and dotGraph of type DotGraph Graph.Vertex as parameters.
+-}
 toFile :: String -> G.DotGraph Graph.Vertex -> IO ()
 toFile filename dotGraph =
     TL.writeFile filename dotText
