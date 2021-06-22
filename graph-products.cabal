@@ -1,18 +1,16 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 69bed95640f681278eec95b4ef7dc7fd46fb6f4727e4cd7d420856618bbcf6d5
 
 name:           graph-products
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://gitlab.fit.cvut.cz/dolanver/graph-products#readme>
-homepage:       https://gitlab.fit.cvut.cz/dolanver/graph-products#readme
-bug-reports:    https://gitlab.fit.cvut.cz/dolanver/graph-products/issues
+description:    Please see the README on GitHub at <https://github.com/vercadol/graph-products#readme>
+homepage:       https://github.com/vercadol/graph-products#readme
+bug-reports:    https://github.com/vercadol/graph-products/issues
 author:         Veronika Dolanska
-maintainer:     dolanver@fit.cvut.cz
+maintainer:     dolanskaverca@gmail.com
 copyright:      2021 Veronika Dolanska
 license:        BSD3
 license-file:   LICENSE
@@ -23,12 +21,12 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://gitlab.fit.cvut.cz/dolanver/graph-products
+  location: https://github.com/vercadol/graph-products
 
 library
   exposed-modules:
       GraphProducts
-    , GraphProducts.Internal
+      GraphProducts.Internal
   other-modules:
       Paths_graph_products
   hs-source-dirs:
@@ -38,37 +36,39 @@ library
     , containers
   default-language: Haskell2010
 
-executable examples
+executable example
   main-is: Graphviz.hs
-  hs-source-dirs: examples
---  other-Modules:
-  ghc-options: -main-is Graphviz
+  other-modules:
+      Paths_graph_products
+  hs-source-dirs:
+      examples
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is Graphviz
   build-depends:
-        base >=4.7 && <5
-      , graph-products
-      , containers
-      , graphviz
-      , text
+      base >=4.7 && <5
+    , containers
+    , graph-products
+    , graphviz
+    , text
   default-language: Haskell2010
 
 test-suite graph-products-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      GraphProducts.CartesianSpec
+      GraphProducts.ConormalSpec
+      GraphProducts.LexicographicalSpec
+      GraphProducts.ModularSpec
+      GraphProducts.StrongSpec
+      GraphProducts.TensorSpec
       Paths_graph_products
-    , GraphProducts.CartesianSpec
-    , GraphProducts.TensorSpec
-    , GraphProducts.LexicographicalSpec
-    , GraphProducts.StrongSpec
-    , GraphProducts.ConormalSpec
-    , GraphProducts.ModularSpec
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , graph-products
+      QuickCheck
+    , base >=4.7 && <5
     , containers
+    , graph-products
     , hspec
-    , QuickCheck
   default-language: Haskell2010

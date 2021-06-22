@@ -1,10 +1,10 @@
 name:                graph-products
 version:             0.1.0.0
-github:              "githubuser/graph-products"
+github:              "vercadol/graph-products"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2021 Author name here"
+author:              "Veronika Dolanska"
+maintainer:          "dolanskaverca@gmail.com"
+copyright:           "2021 Veronika Dolanska"
 
 extra-source-files:
 - README.md
@@ -17,24 +17,28 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/graph-products#readme>
+description:         Please see the README on GitHub at <https://github.com/vercadol/graph-products#readme>
 
 dependencies:
 - base >= 4.7 && < 5
+- containers
 
 library:
   source-dirs: src
 
 executables:
-  graph-products-exe:
-    main:                Main.hs
-    source-dirs:         app
+  example:
+    main:                Graphviz.hs
+    source-dirs:         examples
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -main-is Graphviz
     dependencies:
     - graph-products
+    - graphviz
+    - text
 
 tests:
   graph-products-test:
@@ -46,3 +50,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - graph-products
+    - hspec
+    - QuickCheck
