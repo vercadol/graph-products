@@ -33,7 +33,8 @@ type TupleEdge = (TupleVertex, TupleVertex)
 
 {-|
     Function to compute the vertices of resulting graph.
-    The new vertices are created as cartesian product of graph1's vertices and grpah2's vertices.
+    The new vertices are created as cartesian product of graph1's vertices and graph2's vertices.
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 cartesianVertices :: Graph -> Graph -> Set TupleVertex
@@ -42,6 +43,7 @@ cartesianVertices graph1 graph2 =
 
 {-|
     Function to compute the set of all possible edges in resulting graph, ie the set of all pairs (ordered) of the resulting graph's vertices.
+
     It takes set of resulting graph's vertices (of type 'Set TupleVertices' ) as a parameter.
 -}
 allPossibleEdges :: Set TupleVertex -> Set TupleEdge
@@ -51,20 +53,30 @@ allPossibleEdges vertices =
 
 {-|
     Function to determine whether the given edge exists in the given graph.
+
     It takes graph of type 'Data.Graph' and edge of type '(Data.Graph.Vertex, Data.Graph.Vertex)' as parameters.
 -}
 hasEdge :: Graph -> (Graph.Vertex, Graph.Vertex) -> Bool
 hasEdge graph edge =
     edge `List.elem` (edges graph)
 
+{-|
+    Function which checks whether the 2 vertices are the same.
+
+    It takes a pair of vertices (type '(Data.Graph.Vertex, Data.Graph.Vertex)') as a parameter.
+-}
 isSameVertex :: (Graph.Vertex, Graph.Vertex) -> Bool
 isSameVertex = uncurry (==)
 
+{-|
+    Function representing no condition for vertices. For any pair of vertices returns True.
+-}
 noCondition :: (Graph.Vertex, Graph.Vertex) -> Bool
 noCondition _ = True
 
 {-|
     Function to filter the edges of resulting graph based on two conditions. First condition is for graph1, second for graph2.
+
     It takes two functions of type '((Graph.Vertex, Graph.Vertex) -> Bool)' and graph1, graph2 of type 'Data.Graph' as parameters.
 -}
 getEdgesConditional :: ((Graph.Vertex, Graph.Vertex) -> Bool) -> ((Graph.Vertex, Graph.Vertex) -> Bool) -> Graph -> Graph -> Set TupleEdge
@@ -75,8 +87,10 @@ getEdgesConditional condOnGraph1 condOnGraph2 graph1 graph2 =
 
 {-|
     Function to filter the edges of a graph that was created by cartesian product.
-    Let's define '~' as "there exists an edge between the two vertices in the input graph"
-    Condition for (a1, b1) ~ (a2, b2): (a1 == b1 and a2 ~ b2) or (a1 ~ b1 and a2 == b2)
+
+    > Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    > Condition for (a1, b1) ~ (a2, b2): (a1 == b1 and a2 ~ b2) or (a1 ~ b1 and a2 == b2)
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 cartesianEdges :: Graph -> Graph -> Set TupleEdge
@@ -88,8 +102,10 @@ cartesianEdges graph1 graph2 =
 
 {-|
     Function to filter the edges of a graph that was created by tensor product.
-    Let's define '~' as "there exists an edge between the two vertices in the input graph"
-    Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1 and a2 ~ b2)
+
+    > Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    > Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1 and a2 ~ b2)
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 tensorEdges :: Graph -> Graph -> Set TupleEdge
@@ -98,8 +114,10 @@ tensorEdges graph1 graph2 =
 
 {-|
     Function to filter the edges of a graph that was created by lexicographical product.
-    Let's define '~' as "there exists an edge between the two vertices in the input graph"
-    Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1) or (a1 == b1 and a2 ~ b2)
+
+    > Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    > Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1) or (a1 == b1 and a2 ~ b2)
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 lexicographicalEdges :: Graph -> Graph -> Set TupleEdge
@@ -111,8 +129,10 @@ lexicographicalEdges graph1 graph2 =
 
 {-|
     Function to filter the edges of a graph that was created by strong (normal, AND) product.
-    Let's define '~' as "there exists an edge between the two vertices in the input graph"
-    Condition for (a1, b1) ~ (a2, b2): (a1 == b1 and a2 ~ b2) or (a1 ~ b1 and a2 == b2) or (a1 ~ b1 and a2 ~ b2)
+
+    > Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    > Condition for (a1, b1) ~ (a2, b2): (a1 == b1 and a2 ~ b2) or (a1 ~ b1 and a2 == b2) or (a1 ~ b1 and a2 ~ b2)
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 strongEdges :: Graph -> Graph -> Set TupleEdge
@@ -125,8 +145,10 @@ strongEdges graph1 graph2 =
 
 {-|
     Function to filter the edges of a graph that was created by co-normal (disjunctive, OR) product.
-    Let's define '~' as "there exists an edge between the two vertices in the input graph"
-    Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1) or (a2 ~ b2)
+
+    > Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    > Condition for (a1, b1) ~ (a2, b2): (a1 ~ b1) or (a2 ~ b2)
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 conormalEdges :: Graph -> Graph -> Set TupleEdge
@@ -138,9 +160,11 @@ conormalEdges graph1 graph2 =
 
 {-|
     Function to filter the edges of a graph that was created by modular product.
-    Let's define '~' as "there exists an edge between the two vertices in the input graph"
-    and '!~' as "there does not exist an edge between the two vertices in the input graph"
-    Condition for (a1, b1) ~ (a2, b2): (a1 != b1 and a2 != b2) and ((a1 ~ b1 and a2 ~ b2) or (a1 !~ b1 and a2 !~ b2))
+
+    > Let's define '~' as "there exists an edge between the two vertices in the input graph"
+    > and '!~' as "there does not exist an edge between the two vertices in the input graph"
+    > Condition for (a1, b1) ~ (a2, b2): (a1 != b1 and a2 != b2) and ((a1 ~ b1 and a2 ~ b2) or (a1 !~ b1 and a2 !~ b2))
+
     It takes graph1 and graph2 of type 'Data.Graph' as parameters.
 -}
 modularEdges :: Graph -> Graph -> Set TupleEdge
@@ -153,8 +177,10 @@ modularEdges graph1 graph2 =
 
 {-|
     General (helper) function to create a graph product.
+
     The resulting graph has vertices of type 'Data.Graph.Vertex' (which is alias to 'Int'). The values of the vertices are
-    integers from 0 to (number of vertices - 1).
+    integers from @0@ to @(number of vertices - 1)@.
+
     It takes a function of type '(Graph -> Graph -> Set TupleEdge)' which returns the edges in resulting graph
     and graph1, graph2 of type 'Data.Graph' as parameters.
 -}
