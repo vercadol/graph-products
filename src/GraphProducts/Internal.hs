@@ -46,7 +46,7 @@ cartesianVertices graph1 graph2 =
 -}
 allPossibleEdges :: Set TupleVertex -> Set TupleEdge
 allPossibleEdges vertices =
-    Set.filter (\(a, b) -> a /= b) all
+    Set.filter (uncurry (/=)) all
     where all = Set.cartesianProduct vertices vertices
 
 {-|
@@ -56,6 +56,12 @@ allPossibleEdges vertices =
 hasEdge :: Graph -> (Graph.Vertex, Graph.Vertex) -> Bool
 hasEdge graph edge =
     edge `List.elem` (edges graph)
+
+isSameVertex :: (Graph.Vertex, Graph.Vertex) -> Bool
+isSameVertex = uncurry (==)
+
+noCondition :: (Graph.Vertex, Graph.Vertex) -> Bool
+noCondition _ = True
 
 {-|
     Function to filter the edges of resulting graph based on two conditions. First condition is for graph1, second for graph2.
@@ -77,8 +83,8 @@ cartesianEdges :: Graph -> Graph -> Set TupleEdge
 cartesianEdges graph1 graph2 =
     Set.union firstCondition secondCondition
     where
-        firstCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
-        secondCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> a2 == b2) graph1 graph2
+        firstCondition = getEdgesConditional (isSameVertex) (hasEdge graph2) graph1 graph2
+        secondCondition = getEdgesConditional (hasEdge graph1) (isSameVertex) graph1 graph2
 
 {-|
     Function to filter the edges of a graph that was created by tensor product.
@@ -100,8 +106,8 @@ lexicographicalEdges :: Graph -> Graph -> Set TupleEdge
 lexicographicalEdges graph1 graph2 =
     Set.union firstCondition secondCondition
     where
-        firstCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> True) graph1 graph2
-        secondCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
+        firstCondition = getEdgesConditional (hasEdge graph1) (noCondition) graph1 graph2
+        secondCondition = getEdgesConditional (isSameVertex) (hasEdge graph2) graph1 graph2
 
 {-|
     Function to filter the edges of a graph that was created by strong (normal, AND) product.
@@ -113,8 +119,8 @@ strongEdges :: Graph -> Graph -> Set TupleEdge
 strongEdges graph1 graph2 =
     Set.unions [firstCondition, secondCondition, thirdCondition]
     where
-        firstCondition = getEdgesConditional (\(a1, b1) -> a1 == b1) (hasEdge graph2) graph1 graph2
-        secondCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> a2 == b2) graph1 graph2
+        firstCondition = getEdgesConditional (isSameVertex) (hasEdge graph2) graph1 graph2
+        secondCondition = getEdgesConditional (hasEdge graph1) (isSameVertex) graph1 graph2
         thirdCondition = getEdgesConditional (hasEdge graph1) (hasEdge graph2) graph1 graph2
 
 {-|
@@ -127,8 +133,8 @@ conormalEdges :: Graph -> Graph -> Set TupleEdge
 conormalEdges graph1 graph2 =
     Set.union firstCondition secondCondition
     where
-        firstCondition = getEdgesConditional (hasEdge graph1) (\(a2, b2) -> True) graph1 graph2
-        secondCondition = getEdgesConditional (\(a1, b1) -> True) (hasEdge graph2) graph1 graph2
+        firstCondition = getEdgesConditional (hasEdge graph1) (noCondition) graph1 graph2
+        secondCondition = getEdgesConditional (noCondition) (hasEdge graph2) graph1 graph2
 
 {-|
     Function to filter the edges of a graph that was created by modular product.
@@ -143,7 +149,7 @@ modularEdges graph1 graph2 =
     where
         firstCondition = getEdgesConditional (hasEdge graph1) (hasEdge graph2) graph1 graph2
         secondCondition = getEdgesConditional (not . hasEdge graph1) (not . hasEdge graph2) graph1 graph2
-        verticesNotEqualCondition = getEdgesConditional (\(a1, b1) -> a1 /= b1) (\(a2, b2) -> a2 /= b2) graph1 graph2
+        verticesNotEqualCondition = getEdgesConditional (not . isSameVertex) (not . isSameVertex) graph1 graph2
 
 {-|
     General (helper) function to create a graph product.
