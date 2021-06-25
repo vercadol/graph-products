@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/vercadol/graph-products#readme>
+description: A small library implementing different types of graph products. For more detailed info please see the README on GitHub at <https://github.com/vercadol/graph-products#readme>
 
 dependencies:
 - base >= 4.7 && < 5
