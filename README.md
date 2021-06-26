@@ -1,5 +1,7 @@
 # Graph products
 
+![GitHub](https://img.shields.io/github/license/vercadol/graph-products?label=license)
+
 Semestral work for a course NI-AFP at FIT CTU. Small haskell library for performing graph products.
 
 ## Overview
