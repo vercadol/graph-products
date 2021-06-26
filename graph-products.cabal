@@ -6,7 +6,9 @@ cabal-version: 1.12
 
 name:           graph-products
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/vercadol/graph-products#readme>
+synopsis:       Implementation of different types of graph products.
+description:    A small library implementing different types of graph products. For more detailed info please see the README on GitHub at <https://github.com/vercadol/graph-products#readme>
+category:       Graphs
 homepage:       https://github.com/vercadol/graph-products#readme
 bug-reports:    https://github.com/vercadol/graph-products/issues
 author:         Veronika Dolanska
